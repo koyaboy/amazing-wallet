@@ -1,16 +1,20 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import { Eye, RefreshCw, History, HelpCircle } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Eye, RefreshCw, History, HelpCircle } from "lucide-react";
 
 export function OffRampView() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">XYLE Off-Ramp</h2>
-        <Button variant="outline" size="sm" className="bg-gray-800 border-gray-700 text-white">
+        <Button
+          variant="outline"
+          size="sm"
+          className="bg-gray-800 border-gray-700 text-white"
+        >
           Convert XYLE to Fiat
         </Button>
       </div>
@@ -18,12 +22,14 @@ export function OffRampView() {
       <div className="grid md:grid-cols-2 gap-6">
         <Card className="bg-gray-900 border-gray-800">
           <CardHeader>
-            <h3 className="text-lg font-medium">Your XYLE Balance</h3>
+            <h3 className="text-lg font-medium text-white">
+              Your XYLE Balance
+            </h3>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-4xl font-bold">72.46</div>
+                <div className="text-4xl font-bold text-white">72.46</div>
                 <div className="text-gray-400">XYLE</div>
               </div>
               <Button variant="ghost" size="icon" className="text-gray-400">
@@ -32,28 +38,42 @@ export function OffRampView() {
               </Button>
             </div>
             <div className="text-gray-400">= $10,000.00 USD</div>
-            <div className="text-sm text-gray-400">Fixed Rate: $138.00 USD per XYLE</div>
+            <div className="text-sm text-gray-400">
+              Fixed Rate: $138.00 USD per XYLE
+            </div>
 
             <div className="flex space-x-2 pt-4">
-              <Button variant="outline" size="sm" className="bg-gray-800 border-gray-700 text-white">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gray-800 border-gray-700 text-white"
+              >
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Refresh
               </Button>
-              <Button variant="outline" size="sm" className="bg-gray-800 border-gray-700 text-white">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gray-800 border-gray-700 text-white"
+              >
                 <History className="mr-2 h-4 w-4" />
                 View History
               </Button>
             </div>
 
             <div className="pt-4 border-t border-gray-800 mt-4">
-              <h4 className="font-medium mb-2">XYLE Token Details</h4>
+              <h4 className="font-medium mb-2 text-white">
+                XYLE Token Details
+              </h4>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="text-gray-400">Token Type:</div>
-                <div className="text-right">Security Token (PMA)</div>
+                <div className="text-right text-white">
+                  Security Token (PMA)
+                </div>
                 <div className="text-gray-400">Total Supply:</div>
-                <div className="text-right">3,200,000 XYLE</div>
+                <div className="text-right text-white">3,200,000 XYLE</div>
                 <div className="text-gray-400">Fixed Price:</div>
-                <div className="text-right">$138.00 USD</div>
+                <div className="text-right text-white">$138.00 USD</div>
               </div>
             </div>
           </CardContent>
@@ -61,24 +81,34 @@ export function OffRampView() {
 
         <Card className="bg-gray-900 border-gray-800">
           <CardHeader>
-            <h3 className="text-lg font-medium">Convert XYLE to Fiat</h3>
+            <h3 className="text-lg font-medium text-white">
+              Convert XYLE to Fiat
+            </h3>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
-              <div className="flex justify-between mb-2">
+              <div className="flex justify-between mb-2 text-white">
                 <Label>From</Label>
-                <div className="text-sm text-gray-400">Available Balance: 72.46 XYLE</div>
+                <div className="text-sm text-gray-400">
+                  Available Balance: 72.46 XYLE
+                </div>
               </div>
               <div className="relative">
-                <Input type="text" value="5" className="bg-gray-800 border-gray-700 text-white pr-24" />
-                <div className="absolute inset-y-0 right-0 flex items-center">
-                  <div className="bg-gray-700 text-white px-3 h-full flex items-center rounded-r-md">
+                <Input
+                  type="text"
+                  value="5"
+                  className="bg-gray-800 border-gray-700 text-white py-8 px-4"
+                />
+                <div className="absolute inset-y-0 right-4 flex items-center">
+                  <div className="bg-gray-700 h-[40px]  text-white px-3 flex items-center rounded-full">
                     <span className="mr-2">×</span>
                     <span>XYLE</span>
                   </div>
                 </div>
               </div>
-              <div className="text-sm text-right mt-1 text-gray-400">≈ $690.00</div>
+              <div className="text-sm text-right mt-1 text-gray-400">
+                ≈ $690.00
+              </div>
             </div>
 
             <div className="flex justify-center">
@@ -102,15 +132,22 @@ export function OffRampView() {
             </div>
 
             <div>
-              <div className="flex justify-between mb-2">
+              <div className="flex justify-between mb-2 text-white">
                 <Label>To</Label>
                 <div className="text-sm text-gray-400">Receiving</div>
               </div>
               <div className="relative">
-                <Input type="text" value="690.00" className="bg-gray-800 border-gray-700 text-white pr-24" />
-                <div className="absolute inset-y-0 right-0 flex items-center">
-                  <Button variant="ghost" className="h-full rounded-l-none border-l border-gray-700 px-3">
-                    <span className="mr-2">$</span>
+                <Input
+                  type="text"
+                  value="690.00"
+                  className="bg-gray-800 border-gray-700 text-white py-8 px-4"
+                />
+                <div className="absolute inset-y-0 right-4 flex items-center">
+                  <Button
+                    variant="ghost"
+                    className="h-[40px] rounded-full bg-gray-600 text-white border-l border-gray-700 px-3"
+                  >
+                    <span className="">$</span>
                     <span>USD</span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -122,7 +159,7 @@ export function OffRampView() {
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="ml-2 h-4 w-4"
+                      className=" h-4 w-4"
                     >
                       <path d="m6 9 6 6 6-6" />
                     </svg>
@@ -131,8 +168,8 @@ export function OffRampView() {
               </div>
             </div>
 
-            <div className="space-y-3">
-              <h4 className="font-medium">Payout Method</h4>
+            <div className="space-y-3 text-white  bg-[#1f2937]  p-4 shadow-lg rounded-lg">
+              <h4 className="font-medium ">Payout Method</h4>
               <RadioGroup defaultValue="bank">
                 <div className="flex items-center space-x-2 bg-gray-800 p-3 rounded-md">
                   <RadioGroupItem value="bank" id="bank" />
@@ -146,19 +183,25 @@ export function OffRampView() {
             </div>
 
             <div className="flex items-center justify-between pt-4 border-t border-gray-800">
-              <div className="flex items-center">
-                <div className="mr-1">Rate</div>
-                <Button variant="ghost" size="icon" className="h-5 w-5 text-gray-400">
+              <div className="flex items-center text-white">
+                <div className="mr-1 ">Rate</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-5 w-5 text-gray-400"
+                >
                   <HelpCircle className="h-4 w-4" />
                 </Button>
               </div>
-              <div>1 XYLE = $138.00 USD</div>
+              <div className="text-white">1 XYLE = $138.00 USD</div>
             </div>
 
-            <Button className="w-full bg-gray-700 hover:bg-gray-600 text-white">Convert to Fiat</Button>
+            <Button className="w-full bg-gray-700 hover:bg-gray-600 text-white">
+              Convert to Fiat
+            </Button>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

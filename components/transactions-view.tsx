@@ -1,14 +1,29 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { ArrowRight, Bookmark, CreditCard, ExternalLink } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ArrowRight, Bookmark, CreditCard, ExternalLink } from "lucide-react";
 
 export function TransactionsView() {
   const transactions = [
-    { date: "May 5, 2025", type: "Off-Ramp", amount: "3.62 XYLE → $500.00 USD", status: "Completed" },
-    { date: "Apr 28, 2025", type: "On-Ramp", amount: "$1,380.00 USD → 10.00 XYLE", status: "Completed" },
-    { date: "Apr 15, 2025", type: "Off-Ramp", amount: "2.17 XYLE → $300.00 USD", status: "Completed" },
-  ]
+    {
+      date: "May 5, 2025",
+      type: "Off-Ramp",
+      amount: "3.62 XYLE → $500.00 USD",
+      status: "Completed",
+    },
+    {
+      date: "Apr 28, 2025",
+      type: "On-Ramp",
+      amount: "$1,380.00 USD → 10.00 XYLE",
+      status: "Completed",
+    },
+    {
+      date: "Apr 15, 2025",
+      type: "Off-Ramp",
+      amount: "2.17 XYLE → $300.00 USD",
+      status: "Completed",
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -20,30 +35,39 @@ export function TransactionsView() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
+        <table className="w-full border-separate border-spacing-y-2 text-sm text-white">
           <thead>
-            <tr className="text-left text-gray-400 border-b border-gray-800">
-              <th className="pb-2 font-medium">Date</th>
-              <th className="pb-2 font-medium">Type</th>
-              <th className="pb-2 font-medium">Amount</th>
-              <th className="pb-2 font-medium">Status</th>
-              <th className="pb-2 font-medium">Details</th>
+            <tr className="text-gray-400 uppercase text-xs">
+              <th className="py-2 text-left">Date</th>
+              <th className="py-2 text-left">Type</th>
+              <th className="py-2 text-left">Amount</th>
+              <th className="py-2 text-left">Status</th>
+              <th className="py-2 text-left">Details</th>
             </tr>
           </thead>
           <tbody>
             {transactions.map((transaction, index) => (
-              <tr key={index} className="border-b border-gray-800">
-                <td className="py-4">{transaction.date}</td>
-                <td className="py-4">
+              <tr
+                key={index}
+                className="bg-[#1a1f2c] hover:bg-[#222835] transition-colors duration-150 rounded-md"
+              >
+                <td className="py-3 px-4 rounded-l-md">{transaction.date}</td>
+                <td className="py-3 px-4">
                   <span
-                    className={`px-2 py-1 text-xs rounded ${transaction.type === "On-Ramp" ? "bg-blue-900/30 text-blue-400" : "bg-green-900/30 text-green-400"}`}
+                    className={`px-2 py-1 text-xs rounded ${
+                      transaction.type === "On-Ramp"
+                        ? "bg-blue-900/30 text-blue-400"
+                        : "bg-green-900/30 text-green-400"
+                    }`}
                   >
                     {transaction.type}
                   </span>
                 </td>
-                <td className="py-4">{transaction.amount}</td>
-                <td className="py-4 text-gray-400">{transaction.status}</td>
-                <td className="py-4">
+                <td className="py-3 px-4">{transaction.amount}</td>
+                <td className="py-3 px-4 text-gray-400">
+                  {transaction.status}
+                </td>
+                <td className="py-3 px-4 rounded-r-md">
                   <Button variant="ghost" size="icon" className="text-gray-400">
                     <ExternalLink className="h-4 w-4" />
                     <span className="sr-only">View details</span>
@@ -57,7 +81,7 @@ export function TransactionsView() {
 
       <Card className="bg-gray-900 border-gray-800">
         <CardHeader>
-          <h3 className="text-xl font-bold">Quick On-Ramp</h3>
+          <h3 className="text-xl font-bold text-white">Quick On-Ramp</h3>
           <div className="flex justify-between items-center">
             <div></div>
             <Button variant="link" className="text-gray-400 text-sm">
@@ -66,8 +90,8 @@ export function TransactionsView() {
           </div>
         </CardHeader>
         <CardContent className="grid md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <h4 className="font-medium">Purchase XYLE with USD</h4>
+          <div className="space-y-4 bg-[#1f2937]  p-4 shadow-lg rounded-lg">
+            <h4 className="font-medium text-white">Purchase XYLE with USD</h4>
             <div className="relative">
               <Input
                 type="text"
@@ -78,19 +102,27 @@ export function TransactionsView() {
                 USD
               </div>
             </div>
-            <Button className="w-full bg-gray-700 hover:bg-gray-600 text-white">Buy XYLE</Button>
+            <Button className="w-full bg-gray-700 hover:bg-gray-600 text-white">
+              Buy XYLE
+            </Button>
           </div>
 
-          <div className="space-y-4">
-            <h4 className="font-medium">Payment Methods</h4>
-            <Button variant="outline" className="w-full justify-between bg-gray-800 border-gray-700 text-white">
+          <div className="space-y-4 bg-[#1f2937]  p-4 shadow-lg rounded-lg">
+            <h4 className="font-medium text-white">Payment Methods</h4>
+            <Button
+              variant="outline"
+              className="w-full justify-between bg-gray-800 border-gray-700 text-white"
+            >
               <div className="flex items-center">
                 <CreditCard className="mr-2 h-4 w-4" />
                 Credit/Debit Card
               </div>
               <ArrowRight className="h-4 w-4" />
             </Button>
-            <Button variant="outline" className="w-full justify-between bg-gray-800 border-gray-700 text-white">
+            <Button
+              variant="outline"
+              className="w-full justify-between bg-gray-800 border-gray-700 text-white"
+            >
               <div className="flex items-center">
                 <Bookmark className="mr-2 h-4 w-4" />
                 Bank Transfer
@@ -101,5 +133,5 @@ export function TransactionsView() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
