@@ -1,25 +1,31 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Sidebar } from "./sidebar"
-import { TransactionsView } from "./transactions-view"
-import { OffRampView } from "./off-ramp-view"
-import { Search, Bell, User } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import { Sidebar } from "./sidebar";
+import { TransactionsView } from "./transactions-view";
+import { OffRampView } from "./off-ramp-view";
+import { Search, Bell, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-type View = "dashboard" | "assets" | "transactions" | "exchange" | "off-ramp" | "on-ramp"
+type View =
+  | "dashboard"
+  | "assets"
+  | "transactions"
+  | "exchange"
+  | "off-ramp"
+  | "on-ramp";
 
 export function CryptoWalletDashboard() {
-  const [activeView, setActiveView] = useState<View>("transactions")
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [activeView, setActiveView] = useState<View>("transactions");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <div className="flex flex-col md:flex-row h-screen text-white">
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between p-4 bg-gray-900 border-b border-gray-800">
         <div className="flex items-center">
-          <span className="font-bold text-xl">XYLE</span>
+          <span className="font-bold text-xl">AMAZING</span>
           <span className="text-gray-400 ml-2 text-sm">Wallet</span>
         </div>
         <div className="flex items-center gap-2">
@@ -54,15 +60,20 @@ export function CryptoWalletDashboard() {
       <div
         className={cn(
           "md:hidden fixed inset-0 bg-gray-900 z-50 transition-transform duration-300 ease-in-out",
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <div className="flex justify-between items-center p-4 border-b border-gray-800">
           <div className="flex items-center">
-            <span className="font-bold text-xl">XYLE</span>
+            <span className="font-bold text-xl">AMAZING</span>
             <span className="text-gray-400 ml-2 text-sm">Wallet</span>
           </div>
-          <Button variant="ghost" size="icon" className="text-gray-400" onClick={() => setIsMobileMenuOpen(false)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-gray-400"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
             <span className="sr-only">Close</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -85,8 +96,8 @@ export function CryptoWalletDashboard() {
           <Sidebar
             activeView={activeView}
             setActiveView={(view) => {
-              setActiveView(view as View)
-              setIsMobileMenuOpen(false)
+              setActiveView(view as View);
+              setIsMobileMenuOpen(false);
             }}
             className="w-full"
           />
@@ -106,42 +117,60 @@ export function CryptoWalletDashboard() {
         <header className="hidden md:flex items-center justify-between p-4 border-b border-gray-800">
           <div className="flex items-center space-x-6">
             <div className="flex items-center">
-              <span className="font-bold text-xl">XYLE</span>
+              <span className="font-bold text-xl">AMAZING</span>
               <span className="text-gray-400 ml-2 text-sm">Wallet</span>
             </div>
             <nav className="hidden lg:flex items-center space-x-4">
               <button
-                className={cn("px-3 py-2 text-sm", activeView === "dashboard" && "font-medium")}
+                className={cn(
+                  "px-3 py-2 text-sm",
+                  activeView === "dashboard" && "font-medium"
+                )}
                 onClick={() => setActiveView("dashboard")}
               >
                 Dashboard
               </button>
               <button
-                className={cn("px-3 py-2 text-sm", activeView === "assets" && "font-medium")}
+                className={cn(
+                  "px-3 py-2 text-sm",
+                  activeView === "assets" && "font-medium"
+                )}
                 onClick={() => setActiveView("assets")}
               >
                 Assets
               </button>
               <button
-                className={cn("px-3 py-2 text-sm", activeView === "transactions" && "font-medium")}
+                className={cn(
+                  "px-3 py-2 text-sm",
+                  activeView === "transactions" && "font-medium"
+                )}
                 onClick={() => setActiveView("transactions")}
               >
                 Transactions
               </button>
               <button
-                className={cn("px-3 py-2 text-sm", activeView === "exchange" && "font-medium")}
+                className={cn(
+                  "px-3 py-2 text-sm",
+                  activeView === "exchange" && "font-medium"
+                )}
                 onClick={() => setActiveView("exchange")}
               >
                 Exchange
               </button>
               <button
-                className={cn("px-3 py-2 text-sm", activeView === "off-ramp" && "font-medium")}
+                className={cn(
+                  "px-3 py-2 text-sm",
+                  activeView === "off-ramp" && "font-medium"
+                )}
                 onClick={() => setActiveView("off-ramp")}
               >
                 Off-Ramp
               </button>
               <button
-                className={cn("px-3 py-2 text-sm", activeView === "on-ramp" && "font-medium")}
+                className={cn(
+                  "px-3 py-2 text-sm",
+                  activeView === "on-ramp" && "font-medium"
+                )}
                 onClick={() => setActiveView("on-ramp")}
               >
                 On-Ramp
@@ -179,5 +208,5 @@ export function CryptoWalletDashboard() {
         </div>
       </div>
     </div>
-  )
+  );
 }

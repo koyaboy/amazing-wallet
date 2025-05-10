@@ -64,7 +64,7 @@ export function Sidebar({
         <div className="mb-2">
           <div className="text-sm font-medium">MichiganSecure, LLC</div>
           <div className="text-xs text-gray-400">
-            XYLE Private Membership Association
+            AMAZING Private Membership Association
           </div>
           <div className="text-xs text-gray-400">
             Available Supply: 3.2M XYLE
