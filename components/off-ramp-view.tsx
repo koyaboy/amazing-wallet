@@ -1,16 +1,59 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import { Eye, RefreshCw, History, HelpCircle } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Eye, RefreshCw, History, HelpCircle } from "lucide-react";
+import { users } from "@/lib/users";
 
-export function OffRampView() {
+import { useState } from "react";
+import { convertXyleToUsdt } from "@/lib/walletUtils";
+import { User } from "@/lib/types/user.interface";
+
+export function OffRampView({ isConnected }: { isConnected: boolean }) {
+  const [transfer, setTransfer] = useState<{
+    from: string;
+    to: string;
+    amount: number;
+  }>({
+    from: "1",
+    to: "2",
+    amount: 0,
+  });
+
+  const [convertAmount, setConvertAmount] = useState<number>(0);
+  const [message, setMessage] = useState<string>("");
+  const [userList, setUserList] = useState<User[]>([...users]);
+
+  const handleConvert = (userId: string) => {
+    if (!isConnected) {
+      setMessage("Connect Wallet");
+      alert(message);
+      return;
+    }
+    if (convertAmount === 0) {
+      setMessage("Enter input amount");
+      alert(message);
+      return;
+    }
+    const success = convertXyleToUsdt(userId, convertAmount);
+    if (success) {
+      setMessage("Conversion successful!");
+      setUserList([...users]); // Refresh UI
+    } else {
+      setMessage("Insufficient XYLE balance.");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">XYLE Off-Ramp</h2>
-        <Button variant="outline" size="sm" className="bg-gray-800 border-gray-700 text-white">
+        <Button
+          variant="outline"
+          size="sm"
+          className="bg-gray-800 border-gray-700 text-white"
+        >
           Convert XYLE to Fiat
         </Button>
       </div>
@@ -18,12 +61,16 @@ export function OffRampView() {
       <div className="grid md:grid-cols-2 gap-6">
         <Card className="bg-gray-900 border-gray-800">
           <CardHeader>
-            <h3 className="text-lg font-medium">Your XYLE Balance</h3>
+            <h3 className="text-lg font-medium text-white">
+              Your XYLE Balance
+            </h3>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-4xl font-bold">72.46</div>
+                <div className="text-4xl font-bold text-white">
+                  {users[0].xyleBalance}
+                </div>
                 <div className="text-gray-400">XYLE</div>
               </div>
               <Button variant="ghost" size="icon" className="text-gray-400">
@@ -31,29 +78,43 @@ export function OffRampView() {
                 <span className="sr-only">Show/Hide Balance</span>
               </Button>
             </div>
-            <div className="text-gray-400">= $10,000.00 USD</div>
-            <div className="text-sm text-gray-400">Fixed Rate: $138.00 USD per XYLE</div>
+            <div className="text-gray-400">= ${users[0].xyleBalance} USD</div>
+            <div className="text-sm text-gray-400">
+              Fixed Rate: $1 USD per XYLE
+            </div>
 
             <div className="flex space-x-2 pt-4">
-              <Button variant="outline" size="sm" className="bg-gray-800 border-gray-700 text-white">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gray-800 border-gray-700 text-white"
+              >
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Refresh
               </Button>
-              <Button variant="outline" size="sm" className="bg-gray-800 border-gray-700 text-white">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gray-800 border-gray-700 text-white"
+              >
                 <History className="mr-2 h-4 w-4" />
                 View History
               </Button>
             </div>
 
             <div className="pt-4 border-t border-gray-800 mt-4">
-              <h4 className="font-medium mb-2">XYLE Token Details</h4>
+              <h4 className="font-medium mb-2 text-white">
+                XYLE Token Details
+              </h4>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="text-gray-400">Token Type:</div>
-                <div className="text-right">Security Token (PMA)</div>
+                <div className="text-right text-white">
+                  Security Token (PMA)
+                </div>
                 <div className="text-gray-400">Total Supply:</div>
-                <div className="text-right">3,200,000 XYLE</div>
+                <div className="text-right text-white">3,200,000 XYLE</div>
                 <div className="text-gray-400">Fixed Price:</div>
-                <div className="text-right">$138.00 USD</div>
+                <div className="text-right text-white">$138.00 USD</div>
               </div>
             </div>
           </CardContent>
@@ -61,16 +122,25 @@ export function OffRampView() {
 
         <Card className="bg-gray-900 border-gray-800">
           <CardHeader>
-            <h3 className="text-lg font-medium">Convert XYLE to Fiat</h3>
+            <h3 className="text-lg font-medium text-white">
+              Convert XYLE to Fiat
+            </h3>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
-              <div className="flex justify-between mb-2">
+              <div className="flex justify-between mb-2 text-white">
                 <Label>From</Label>
-                <div className="text-sm text-gray-400">Available Balance: 72.46 XYLE</div>
+                <div className="text-sm text-gray-400">
+                  Available Balance: {users[0].xyleBalance} XYLE
+                </div>
               </div>
               <div className="relative">
-                <Input type="text" value="5" className="bg-gray-800 border-gray-700 text-white pr-24" />
+                <Input
+                  type="text"
+                  value={convertAmount}
+                  className="bg-gray-800 border-gray-700 text-white pr-24"
+                  onChange={(e) => setConvertAmount(Number(e.target.value))}
+                />
                 <div className="absolute inset-y-0 right-0 flex items-center">
                   <div className="bg-gray-700 text-white px-3 h-full flex items-center rounded-r-md">
                     <span className="mr-2">×</span>
@@ -78,7 +148,9 @@ export function OffRampView() {
                   </div>
                 </div>
               </div>
-              <div className="text-sm text-right mt-1 text-gray-400">≈ $690.00</div>
+              <div className="text-sm text-right mt-1 text-gray-400">
+                ≈ ${convertAmount * 1}
+              </div>
             </div>
 
             <div className="flex justify-center">
@@ -102,14 +174,21 @@ export function OffRampView() {
             </div>
 
             <div>
-              <div className="flex justify-between mb-2">
+              <div className="flex justify-between mb-2 text-white">
                 <Label>To</Label>
                 <div className="text-sm text-gray-400">Receiving</div>
               </div>
               <div className="relative">
-                <Input type="text" value="690.00" className="bg-gray-800 border-gray-700 text-white pr-24" />
+                <Input
+                  type="text"
+                  value={convertAmount * 1}
+                  className="bg-gray-800 border-gray-700 text-white pr-24"
+                />
                 <div className="absolute inset-y-0 right-0 flex items-center">
-                  <Button variant="ghost" className="h-full rounded-l-none border-l border-gray-700 px-3">
+                  <Button
+                    variant="ghost"
+                    className="h-full rounded-l-none border-l border-gray-700 px-3"
+                  >
                     <span className="mr-2">$</span>
                     <span>USD</span>
                     <svg
@@ -132,13 +211,13 @@ export function OffRampView() {
             </div>
 
             <div className="space-y-3">
-              <h4 className="font-medium">Payout Method</h4>
+              <h4 className="font-medium text-white">Payout Method</h4>
               <RadioGroup defaultValue="bank">
-                <div className="flex items-center space-x-2 bg-gray-800 p-3 rounded-md">
+                <div className="flex items-center space-x-2 bg-gray-800 p-3 rounded-md text-white">
                   <RadioGroupItem value="bank" id="bank" />
                   <Label htmlFor="bank">Bank Account (ACH)</Label>
                 </div>
-                <div className="flex items-center space-x-2 bg-gray-800 p-3 rounded-md">
+                <div className="flex items-center space-x-2 bg-gray-800 p-3 rounded-md text-white">
                   <RadioGroupItem value="wire" id="wire" />
                   <Label htmlFor="wire">Wire Transfer</Label>
                 </div>
@@ -146,19 +225,28 @@ export function OffRampView() {
             </div>
 
             <div className="flex items-center justify-between pt-4 border-t border-gray-800">
-              <div className="flex items-center">
+              <div className="flex items-center text-white">
                 <div className="mr-1">Rate</div>
-                <Button variant="ghost" size="icon" className="h-5 w-5 text-gray-400">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-5 w-5 text-gray-400"
+                >
                   <HelpCircle className="h-4 w-4" />
                 </Button>
               </div>
-              <div>1 XYLE = $138.00 USD</div>
+              <div className="text-white">1 XYLE = $1USD</div>
             </div>
 
-            <Button className="w-full bg-gray-700 hover:bg-gray-600 text-white">Convert to Fiat</Button>
+            <Button
+              className="w-full bg-gray-700 hover:bg-gray-600 text-white"
+              onClick={() => handleConvert(userList[0].id)}
+            >
+              Convert to Fiat
+            </Button>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

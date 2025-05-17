@@ -1,14 +1,51 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { ArrowRight, Bookmark, CreditCard, ExternalLink } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { User } from "@/lib/types/user.interface";
+import { users } from "@/lib/users";
+import { buyXyle } from "@/lib/walletUtils";
+import { ArrowRight, Bookmark, CreditCard, ExternalLink } from "lucide-react";
+import { useState } from "react";
 
-export function TransactionsView() {
+export function TransactionsView({ isConnected }: { isConnected: boolean }) {
+  const [message, setMessage] = useState<string | null>(null);
+  const [buyAmount, setBuyAmount] = useState<number>(0);
+  const [userList, setUserList] = useState<User[]>([...users]);
+
+  const handleBuy = (id: string) => {
+    if (!isConnected) {
+      setMessage("Connect Wallet");
+      alert(message);
+      return;
+    }
+    const result = buyXyle(id, buyAmount);
+    if (result.success) {
+      setUserList([...users]);
+      setMessage("XYLE purchase successful");
+    } else {
+      setMessage(result.message || "Failed to purchase");
+    }
+  };
   const transactions = [
-    { date: "May 5, 2025", type: "Off-Ramp", amount: "3.62 XYLE → $500.00 USD", status: "Completed" },
-    { date: "Apr 28, 2025", type: "On-Ramp", amount: "$1,380.00 USD → 10.00 XYLE", status: "Completed" },
-    { date: "Apr 15, 2025", type: "Off-Ramp", amount: "2.17 XYLE → $300.00 USD", status: "Completed" },
-  ]
+    {
+      date: "May 5, 2025",
+      type: "Off-Ramp",
+      amount: "3.62 XYLE → $500.00 USD",
+      status: "Completed",
+    },
+    {
+      date: "Apr 28, 2025",
+      type: "On-Ramp",
+      amount: "$1,380.00 USD → 10.00 XYLE",
+      status: "Completed",
+    },
+    {
+      date: "Apr 15, 2025",
+      type: "Off-Ramp",
+      amount: "2.17 XYLE → $300.00 USD",
+      status: "Completed",
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -36,7 +73,11 @@ export function TransactionsView() {
                 <td className="py-4">{transaction.date}</td>
                 <td className="py-4">
                   <span
-                    className={`px-2 py-1 text-xs rounded ${transaction.type === "On-Ramp" ? "bg-blue-900/30 text-blue-400" : "bg-green-900/30 text-green-400"}`}
+                    className={`px-2 py-1 text-xs rounded ${
+                      transaction.type === "On-Ramp"
+                        ? "bg-blue-900/30 text-blue-400"
+                        : "bg-green-900/30 text-green-400"
+                    }`}
                   >
                     {transaction.type}
                   </span>
@@ -67,30 +108,49 @@ export function TransactionsView() {
         </CardHeader>
         <CardContent className="grid md:grid-cols-2 gap-6">
           <div className="space-y-4">
-            <h4 className="font-medium">Purchase XYLE with USD</h4>
+            <div className="flex justify-between text-white">
+              <h4 className="font-medium">Purchase XYLE with USD</h4>
+              <h4 className="font-medium">
+                Balance : ${userList[0].usdtBalance}
+              </h4>
+            </div>
+
             <div className="relative">
               <Input
                 type="text"
                 placeholder="Enter USD amount"
                 className="bg-gray-800 border-gray-700 text-white pr-16"
+                onChange={(e) => setBuyAmount(Number(e.target.value))}
               />
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
                 USD
               </div>
             </div>
-            <Button className="w-full bg-gray-700 hover:bg-gray-600 text-white">Buy XYLE</Button>
+            <Button
+              onClick={() => handleBuy(userList[0].id)}
+              className="w-full bg-gray-700 hover:bg-gray-600 text-white"
+              // disabled={!isConnected}
+            >
+              Buy XYLE
+            </Button>
           </div>
 
           <div className="space-y-4">
             <h4 className="font-medium">Payment Methods</h4>
-            <Button variant="outline" className="w-full justify-between bg-gray-800 border-gray-700 text-white">
+            <Button
+              variant="outline"
+              className="w-full justify-between bg-gray-800 border-gray-700 text-white"
+            >
               <div className="flex items-center">
                 <CreditCard className="mr-2 h-4 w-4" />
                 Credit/Debit Card
               </div>
               <ArrowRight className="h-4 w-4" />
             </Button>
-            <Button variant="outline" className="w-full justify-between bg-gray-800 border-gray-700 text-white">
+            <Button
+              variant="outline"
+              className="w-full justify-between bg-gray-800 border-gray-700 text-white"
+            >
               <div className="flex items-center">
                 <Bookmark className="mr-2 h-4 w-4" />
                 Bank Transfer
@@ -101,5 +161,5 @@ export function TransactionsView() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
