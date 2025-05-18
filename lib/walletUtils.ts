@@ -19,7 +19,9 @@ export function buyXyle(
 
   if (user.usdtBalance >= amount) {
     user.usdtBalance -= amount;
-    user.xyleBalance += amount;
+    // user.xyleBalance += amount;
+    user.xyleBalance += amount / 138;
+
     return { success: true };
   } else {
     return { success: false, message: "Insufficient USDT" };
@@ -46,7 +48,7 @@ export function transferXyle(
 }
 
 // Simulated exchange rate
-const XYLE_TO_USDT = 1;
+const XYLE_TO_USDT = 138;
 
 export function convertXyleToUsdt(userId: string, xyleAmount: number): boolean {
   const user = users.find((u) => u.id === userId);

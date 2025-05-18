@@ -54,13 +54,13 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">XYLE Off-Ramp</h2>
-        <Button
+        {/* <Button
           variant="outline"
           size="sm"
           className="bg-gray-800 border-gray-700 text-white"
         >
           Convert XYLE to Fiat
-        </Button>
+        </Button> */}
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -87,7 +87,7 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
 
             <div className="text-gray-400">= ${users[0].xyleBalance} USD</div>
             <div className="text-sm text-gray-400">
-              Fixed Rate: $1 USD per XYLE
+              Fixed Rate: $138 USD per XYLE
             </div>
 
             <div className="flex space-x-2 pt-4">
@@ -246,7 +246,7 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
                 </Button>
               </div>
 
-              <div className="text-white">1 XYLE = $1USD</div>
+              <div className="text-white">1 XYLE = 138 USD</div>
             </div>
 
             <Button
