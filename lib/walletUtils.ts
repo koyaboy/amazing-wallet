@@ -12,6 +12,11 @@ export function buyXyle(
   const user = getUser(id);
   if (!user) return { success: false, message: "User not found" };
 
+  if (!amount) {
+    alert("Please input an amount");
+    return { success: false };
+  }
+
   if (user.usdtBalance >= amount) {
     user.usdtBalance -= amount;
     user.xyleBalance += amount;

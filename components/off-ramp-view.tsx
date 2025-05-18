@@ -28,24 +28,27 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
 
   const handleConvert = (userId: string) => {
     if (!isConnected) {
-      setMessage("Connect Wallet");
-      alert(message);
+      // setMessage("Connect Wallet");
+      alert("Please connect your wallet");
+      // alert(message);
       return;
     }
     if (convertAmount === 0) {
       setMessage("Enter input amount");
-      alert(message);
+      alert("Enter input amount");
       return;
     }
     const success = convertXyleToUsdt(userId, convertAmount);
     if (success) {
-      setMessage("Conversion successful!");
+      // setMessage("Conversion successful!");
+      alert("Conversion successful!");
       setUserList([...users]); // Refresh UI
     } else {
-      setMessage("Insufficient XYLE balance.");
+      // console.log("did this happen");
+      alert("Insufficient XYLE balance");
+      // setMessage("Insufficient XYLE balance.");
     }
   };
-
 
   return (
     <div className="space-y-6">
@@ -70,7 +73,6 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-
                 <div className="text-4xl font-bold text-white">
                   {users[0].xyleBalance}
                 </div>
@@ -86,7 +88,6 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
             <div className="text-gray-400">= ${users[0].xyleBalance} USD</div>
             <div className="text-sm text-gray-400">
               Fixed Rate: $1 USD per XYLE
-
             </div>
 
             <div className="flex space-x-2 pt-4">
@@ -137,31 +138,25 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
               <div className="flex justify-between mb-2 text-white">
                 <Label>From</Label>
                 <div className="text-sm text-gray-400">
-
                   Available Balance: {users[0].xyleBalance} XYLE
-
                 </div>
               </div>
               <div className="relative">
                 <Input
                   type="text"
-
                   value={convertAmount}
                   className="bg-gray-800 border-gray-700 text-white pr-24"
                   onChange={(e) => setConvertAmount(Number(e.target.value))}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center">
                   <div className="bg-gray-700 text-white px-3 h-full flex items-center rounded-r-md">
-
                     <span className="mr-2">×</span>
                     <span>XYLE</span>
                   </div>
                 </div>
               </div>
               <div className="text-sm text-right mt-1 text-gray-400">
-
                 ≈ ${convertAmount * 1}
-
               </div>
             </div>
 
@@ -193,7 +188,6 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
               <div className="relative">
                 <Input
                   type="text"
-
                   value={convertAmount * 1}
                   className="bg-gray-800 border-gray-700 text-white pr-24"
                 />
@@ -224,7 +218,6 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
               </div>
             </div>
 
-
             <div className="space-y-3">
               <h4 className="font-medium text-white">Payout Method</h4>
 
@@ -242,7 +235,6 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
 
             <div className="flex items-center justify-between pt-4 border-t border-gray-800">
               <div className="flex items-center text-white">
-
                 <div className="mr-1">Rate</div>
 
                 <Button
@@ -261,7 +253,6 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
               className="w-full bg-gray-700 hover:bg-gray-600 text-white"
               onClick={() => handleConvert(userList[0].id)}
             >
-
               Convert to Fiat
             </Button>
           </CardContent>

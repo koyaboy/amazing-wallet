@@ -8,7 +8,6 @@ import { buyXyle } from "@/lib/walletUtils";
 import { ArrowRight, Bookmark, CreditCard, ExternalLink } from "lucide-react";
 import { useState } from "react";
 
-
 export function TransactionsView({ isConnected }: { isConnected: boolean }) {
   const [message, setMessage] = useState<string | null>(null);
   const [buyAmount, setBuyAmount] = useState<number>(0);
@@ -16,16 +15,20 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
 
   const handleBuy = (id: string) => {
     if (!isConnected) {
-      setMessage("Connect Wallet");
-      alert(message);
+      const walletMessage = "Please Connect Your Wallet";
+      setMessage(walletMessage);
+      alert(walletMessage);
       return;
     }
     const result = buyXyle(id, buyAmount);
     if (result.success) {
       setUserList([...users]);
-      setMessage("XYLE purchase successful");
+      alert("XYLE purchase successful");
+      // setMessage("XYLE purchase successful");
     } else {
-      setMessage(result.message || "Failed to purchase");
+      // setMessage(result.message || "Failed to purchase");
+      alert("Failed to purchase");
+      setMessage("Failed to purchase");
     }
   };
   const transactions = [
@@ -114,7 +117,6 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
           </div>
         </CardHeader>
         <CardContent className="grid md:grid-cols-2 gap-6">
-
           <div className="space-y-4">
             <div className="flex justify-between text-white">
               <h4 className="font-medium">Purchase XYLE with USD</h4>
@@ -122,7 +124,6 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
                 Balance : ${userList[0].usdtBalance}
               </h4>
             </div>
-
 
             <div className="relative">
               <Input
@@ -141,11 +142,9 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
               className="w-full bg-gray-700 hover:bg-gray-600 text-white"
               // disabled={!isConnected}
             >
-
               Buy XYLE
             </Button>
           </div>
-
 
           <div className="space-y-4">
             <h4 className="font-medium">Payment Methods</h4>
