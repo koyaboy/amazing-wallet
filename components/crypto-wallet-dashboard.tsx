@@ -4,9 +4,14 @@ import { useState } from "react";
 import { Sidebar } from "./sidebar";
 import { TransactionsView } from "./transactions-view";
 import { OffRampView } from "./off-ramp-view";
-import { Search, Bell, User } from "lucide-react";
+
+import { Search, Bell, User, UserCircle2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { users } from "@/lib/users";
+import { buyXyle } from "@/lib/walletUtils";
+import { User as UserType } from "@/lib/types/user.interface";
+
 
 type View =
   | "dashboard"
@@ -19,6 +24,17 @@ type View =
 export function CryptoWalletDashboard() {
   const [activeView, setActiveView] = useState<View>("transactions");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const [connectedUserId, setConnectedUserId] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+
+  const handleConnectWallet = (userId: string) => {
+    setConnectedUserId(userId);
+    setMessage("Wallet connected!");
+    setIsConnected(true);
+  };
+
 
   return (
     <div className="flex flex-col md:flex-row h-screen text-white">
@@ -182,13 +198,24 @@ export function CryptoWalletDashboard() {
               <Search className="h-5 w-5" />
               <span className="sr-only">Search</span>
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="hidden sm:flex items-center gap-2 bg-gray-900 text-white border-gray-700"
-            >
-              <span>Connect</span>
-            </Button>
+            {!connectedUserId && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="hidden sm:flex items-center gap-2 bg-gray-900 text-white border-gray-700"
+                onClick={() => handleConnectWallet(users[0].id)}
+              >
+                <span>Connect</span>
+              </Button>
+            )}
+            {connectedUserId && (
+              <div className="flex gap-2">
+                <p className="w-20 overflow-hidden text-ellipsis">
+                  {users[0].name}
+                </p>
+                <UserCircle2Icon size={24} color="#fff" />
+              </div>
+            )}
             <Button variant="ghost" size="icon" className="text-gray-400">
               <Bell className="h-5 w-5" />
               <span className="sr-only">Notifications</span>
@@ -202,8 +229,12 @@ export function CryptoWalletDashboard() {
 
         {/* Content Area */}
         <div className="p-4 md:p-6">
-          {activeView === "transactions" && <TransactionsView />}
-          {activeView === "off-ramp" && <OffRampView />}
+          {activeView === "transactions" && (
+            <TransactionsView isConnected={isConnected} />
+          )}
+          {activeView === "off-ramp" && (
+            <OffRampView isConnected={isConnected} />
+          )}
           {/* Other views would be conditionally rendered here */}
         </div>
       </div>

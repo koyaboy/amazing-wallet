@@ -1,9 +1,33 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Bookmark, CreditCard, ExternalLink } from "lucide-react";
 
-export function TransactionsView() {
+import { User } from "@/lib/types/user.interface";
+import { users } from "@/lib/users";
+import { buyXyle } from "@/lib/walletUtils";
+import { ArrowRight, Bookmark, CreditCard, ExternalLink } from "lucide-react";
+import { useState } from "react";
+
+
+export function TransactionsView({ isConnected }: { isConnected: boolean }) {
+  const [message, setMessage] = useState<string | null>(null);
+  const [buyAmount, setBuyAmount] = useState<number>(0);
+  const [userList, setUserList] = useState<User[]>([...users]);
+
+  const handleBuy = (id: string) => {
+    if (!isConnected) {
+      setMessage("Connect Wallet");
+      alert(message);
+      return;
+    }
+    const result = buyXyle(id, buyAmount);
+    if (result.success) {
+      setUserList([...users]);
+      setMessage("XYLE purchase successful");
+    } else {
+      setMessage(result.message || "Failed to purchase");
+    }
+  };
   const transactions = [
     {
       date: "May 5, 2025",
@@ -90,25 +114,42 @@ export function TransactionsView() {
           </div>
         </CardHeader>
         <CardContent className="grid md:grid-cols-2 gap-6">
-          <div className="space-y-4 bg-[#1f2937]  p-4 shadow-lg rounded-lg">
-            <h4 className="font-medium text-white">Purchase XYLE with USD</h4>
+
+          <div className="space-y-4">
+            <div className="flex justify-between text-white">
+              <h4 className="font-medium">Purchase XYLE with USD</h4>
+              <h4 className="font-medium">
+                Balance : ${userList[0].usdtBalance}
+              </h4>
+            </div>
+
+
             <div className="relative">
               <Input
                 type="text"
                 placeholder="Enter USD amount"
                 className="bg-gray-800 border-gray-700 text-white pr-16"
+                onChange={(e) => setBuyAmount(Number(e.target.value))}
               />
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
                 USD
               </div>
             </div>
-            <Button className="w-full bg-gray-700 hover:bg-gray-600 text-white">
+
+            <Button
+              onClick={() => handleBuy(userList[0].id)}
+              className="w-full bg-gray-700 hover:bg-gray-600 text-white"
+              // disabled={!isConnected}
+            >
+
               Buy XYLE
             </Button>
           </div>
 
-          <div className="space-y-4 bg-[#1f2937]  p-4 shadow-lg rounded-lg">
-            <h4 className="font-medium text-white">Payment Methods</h4>
+
+          <div className="space-y-4">
+            <h4 className="font-medium">Payment Methods</h4>
+
             <Button
               variant="outline"
               className="w-full justify-between bg-gray-800 border-gray-700 text-white"
