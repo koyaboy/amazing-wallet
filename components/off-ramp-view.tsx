@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Eye, RefreshCw, History, HelpCircle } from "lucide-react";
+
 import { users } from "@/lib/users";
 
 import { useState } from "react";
@@ -45,6 +46,7 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
     }
   };
 
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -68,9 +70,11 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
+
                 <div className="text-4xl font-bold text-white">
                   {users[0].xyleBalance}
                 </div>
+
                 <div className="text-gray-400">XYLE</div>
               </div>
               <Button variant="ghost" size="icon" className="text-gray-400">
@@ -78,9 +82,11 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
                 <span className="sr-only">Show/Hide Balance</span>
               </Button>
             </div>
+
             <div className="text-gray-400">= ${users[0].xyleBalance} USD</div>
             <div className="text-sm text-gray-400">
               Fixed Rate: $1 USD per XYLE
+
             </div>
 
             <div className="flex space-x-2 pt-4">
@@ -131,25 +137,31 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
               <div className="flex justify-between mb-2 text-white">
                 <Label>From</Label>
                 <div className="text-sm text-gray-400">
+
                   Available Balance: {users[0].xyleBalance} XYLE
+
                 </div>
               </div>
               <div className="relative">
                 <Input
                   type="text"
+
                   value={convertAmount}
                   className="bg-gray-800 border-gray-700 text-white pr-24"
                   onChange={(e) => setConvertAmount(Number(e.target.value))}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center">
                   <div className="bg-gray-700 text-white px-3 h-full flex items-center rounded-r-md">
+
                     <span className="mr-2">×</span>
                     <span>XYLE</span>
                   </div>
                 </div>
               </div>
               <div className="text-sm text-right mt-1 text-gray-400">
+
                 ≈ ${convertAmount * 1}
+
               </div>
             </div>
 
@@ -181,6 +193,7 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
               <div className="relative">
                 <Input
                   type="text"
+
                   value={convertAmount * 1}
                   className="bg-gray-800 border-gray-700 text-white pr-24"
                 />
@@ -190,6 +203,7 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
                     className="h-full rounded-l-none border-l border-gray-700 px-3"
                   >
                     <span className="mr-2">$</span>
+
                     <span>USD</span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -201,7 +215,7 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="ml-2 h-4 w-4"
+                      className=" h-4 w-4"
                     >
                       <path d="m6 9 6 6 6-6" />
                     </svg>
@@ -210,8 +224,10 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
               </div>
             </div>
 
+
             <div className="space-y-3">
               <h4 className="font-medium text-white">Payout Method</h4>
+
               <RadioGroup defaultValue="bank">
                 <div className="flex items-center space-x-2 bg-gray-800 p-3 rounded-md text-white">
                   <RadioGroupItem value="bank" id="bank" />
@@ -226,7 +242,9 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
 
             <div className="flex items-center justify-between pt-4 border-t border-gray-800">
               <div className="flex items-center text-white">
+
                 <div className="mr-1">Rate</div>
+
                 <Button
                   variant="ghost"
                   size="icon"
@@ -235,6 +253,7 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
                   <HelpCircle className="h-4 w-4" />
                 </Button>
               </div>
+
               <div className="text-white">1 XYLE = $1USD</div>
             </div>
 
@@ -242,6 +261,7 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
               className="w-full bg-gray-700 hover:bg-gray-600 text-white"
               onClick={() => handleConvert(userList[0].id)}
             >
+
               Convert to Fiat
             </Button>
           </CardContent>

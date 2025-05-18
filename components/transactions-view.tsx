@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+
 import { User } from "@/lib/types/user.interface";
 import { users } from "@/lib/users";
 import { buyXyle } from "@/lib/walletUtils";
 import { ArrowRight, Bookmark, CreditCard, ExternalLink } from "lucide-react";
 import { useState } from "react";
+
 
 export function TransactionsView({ isConnected }: { isConnected: boolean }) {
   const [message, setMessage] = useState<string | null>(null);
@@ -57,21 +59,24 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
+        <table className="w-full border-separate border-spacing-y-2 text-sm text-white">
           <thead>
-            <tr className="text-left text-gray-400 border-b border-gray-800">
-              <th className="pb-2 font-medium">Date</th>
-              <th className="pb-2 font-medium">Type</th>
-              <th className="pb-2 font-medium">Amount</th>
-              <th className="pb-2 font-medium">Status</th>
-              <th className="pb-2 font-medium">Details</th>
+            <tr className="text-gray-400 uppercase text-xs">
+              <th className="py-2 text-left">Date</th>
+              <th className="py-2 text-left">Type</th>
+              <th className="py-2 text-left">Amount</th>
+              <th className="py-2 text-left">Status</th>
+              <th className="py-2 text-left">Details</th>
             </tr>
           </thead>
           <tbody>
             {transactions.map((transaction, index) => (
-              <tr key={index} className="border-b border-gray-800">
-                <td className="py-4">{transaction.date}</td>
-                <td className="py-4">
+              <tr
+                key={index}
+                className="bg-[#1a1f2c] hover:bg-[#222835] transition-colors duration-150 rounded-md"
+              >
+                <td className="py-3 px-4 rounded-l-md">{transaction.date}</td>
+                <td className="py-3 px-4">
                   <span
                     className={`px-2 py-1 text-xs rounded ${
                       transaction.type === "On-Ramp"
@@ -82,9 +87,11 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
                     {transaction.type}
                   </span>
                 </td>
-                <td className="py-4">{transaction.amount}</td>
-                <td className="py-4 text-gray-400">{transaction.status}</td>
-                <td className="py-4">
+                <td className="py-3 px-4">{transaction.amount}</td>
+                <td className="py-3 px-4 text-gray-400">
+                  {transaction.status}
+                </td>
+                <td className="py-3 px-4 rounded-r-md">
                   <Button variant="ghost" size="icon" className="text-gray-400">
                     <ExternalLink className="h-4 w-4" />
                     <span className="sr-only">View details</span>
@@ -98,7 +105,7 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
 
       <Card className="bg-gray-900 border-gray-800">
         <CardHeader>
-          <h3 className="text-xl font-bold">Quick On-Ramp</h3>
+          <h3 className="text-xl font-bold text-white">Quick On-Ramp</h3>
           <div className="flex justify-between items-center">
             <div></div>
             <Button variant="link" className="text-gray-400 text-sm">
@@ -107,6 +114,7 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
           </div>
         </CardHeader>
         <CardContent className="grid md:grid-cols-2 gap-6">
+
           <div className="space-y-4">
             <div className="flex justify-between text-white">
               <h4 className="font-medium">Purchase XYLE with USD</h4>
@@ -114,6 +122,7 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
                 Balance : ${userList[0].usdtBalance}
               </h4>
             </div>
+
 
             <div className="relative">
               <Input
@@ -126,17 +135,21 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
                 USD
               </div>
             </div>
+
             <Button
               onClick={() => handleBuy(userList[0].id)}
               className="w-full bg-gray-700 hover:bg-gray-600 text-white"
               // disabled={!isConnected}
             >
+
               Buy XYLE
             </Button>
           </div>
 
+
           <div className="space-y-4">
             <h4 className="font-medium">Payment Methods</h4>
+
             <Button
               variant="outline"
               className="w-full justify-between bg-gray-800 border-gray-700 text-white"

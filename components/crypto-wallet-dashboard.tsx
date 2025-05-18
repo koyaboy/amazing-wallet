@@ -4,12 +4,14 @@ import { useState } from "react";
 import { Sidebar } from "./sidebar";
 import { TransactionsView } from "./transactions-view";
 import { OffRampView } from "./off-ramp-view";
+
 import { Search, Bell, User, UserCircle2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { users } from "@/lib/users";
 import { buyXyle } from "@/lib/walletUtils";
 import { User as UserType } from "@/lib/types/user.interface";
+
 
 type View =
   | "dashboard"
@@ -22,6 +24,7 @@ type View =
 export function CryptoWalletDashboard() {
   const [activeView, setActiveView] = useState<View>("transactions");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const [connectedUserId, setConnectedUserId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
@@ -32,12 +35,13 @@ export function CryptoWalletDashboard() {
     setIsConnected(true);
   };
 
+
   return (
     <div className="flex flex-col md:flex-row h-screen text-white">
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between p-4 bg-gray-900 border-b border-gray-800">
         <div className="flex items-center">
-          <span className="font-bold text-xl">XYLE</span>
+          <span className="font-bold text-xl">AMAZING</span>
           <span className="text-gray-400 ml-2 text-sm">Wallet</span>
         </div>
         <div className="flex items-center gap-2">
@@ -77,7 +81,7 @@ export function CryptoWalletDashboard() {
       >
         <div className="flex justify-between items-center p-4 border-b border-gray-800">
           <div className="flex items-center">
-            <span className="font-bold text-xl">XYLE</span>
+            <span className="font-bold text-xl">AMAZING</span>
             <span className="text-gray-400 ml-2 text-sm">Wallet</span>
           </div>
           <Button
@@ -129,7 +133,7 @@ export function CryptoWalletDashboard() {
         <header className="hidden md:flex items-center justify-between p-4 border-b border-gray-800">
           <div className="flex items-center space-x-6">
             <div className="flex items-center">
-              <span className="font-bold text-xl">XYLE</span>
+              <span className="font-bold text-xl">AMAZING</span>
               <span className="text-gray-400 ml-2 text-sm">Wallet</span>
             </div>
             <nav className="hidden lg:flex items-center space-x-4">
