@@ -10,6 +10,7 @@ import { users } from "@/lib/users";
 import { useState } from "react";
 import { convertXyleToUsdt } from "@/lib/walletUtils";
 import { User } from "@/lib/types/user.interface";
+import XyleLoadingOverlay from "./loading-screen";
 
 export function OffRampView({ isConnected }: { isConnected: boolean }) {
   const [transfer, setTransfer] = useState<{
@@ -22,32 +23,35 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
     amount: 0,
   });
 
-  const [convertAmount, setConvertAmount] = useState<number>(0);
+  const [convertAmount, setConvertAmount] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [userList, setUserList] = useState<User[]>([...users]);
+  const [showLoading, setShowLoading] = useState<boolean>(false);
 
   const handleConvert = (userId: string) => {
     if (!isConnected) {
-      // setMessage("Connect Wallet");
       alert("Please connect your wallet");
-      // alert(message);
       return;
     }
-    if (convertAmount === 0) {
-      setMessage("Enter input amount");
+    if (convertAmount === "") {
       alert("Enter input amount");
       return;
     }
-    const success = convertXyleToUsdt(userId, convertAmount);
+
+    if (Number(convertAmount) > userList[0].xyleBalance) {
+      alert("Insufficient XYLE balance");
+      return;
+    }
+    setShowLoading(true);
+  };
+
+  const handleComplete = (userId: string) => {
+    const success = convertXyleToUsdt(userId, Number(convertAmount));
     if (success) {
-      // setMessage("Conversion successful!");
       alert("Conversion successful!");
       setUserList([...users]); // Refresh UI
-    } else {
-      // console.log("did this happen");
-      alert("Insufficient XYLE balance");
-      // setMessage("Insufficient XYLE balance.");
     }
+    setShowLoading(false);
   };
 
   return (
@@ -143,10 +147,18 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
               </div>
               <div className="relative">
                 <Input
-                  type="text"
+                  type="number"
                   value={convertAmount}
                   className="bg-gray-800 border-gray-700 text-white pr-24"
-                  onChange={(e) => setConvertAmount(Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || /^[0-9]*\.?[0-9]*$/.test(value)) {
+                      setConvertAmount((Number(value) || 0).toString());
+                    }
+                  }}
+                  inputMode="decimal"
+                  pattern="[0-9]*"
+                  step="any"
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center">
                   <div className="bg-gray-700 text-white px-3 h-full flex items-center rounded-r-md">
@@ -156,7 +168,7 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
                 </div>
               </div>
               <div className="text-sm text-right mt-1 text-gray-400">
-                ≈ ${convertAmount * 1}
+                ≈ ${Number(convertAmount) * 138}
               </div>
             </div>
 
@@ -183,18 +195,21 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
             <div>
               <div className="flex justify-between mb-2 text-white">
                 <Label>To</Label>
-                <div className="text-sm text-gray-400">Receiving</div>
+                <div className="text-sm text-gray-400">
+                  Receiving ${Number(convertAmount) * 138}
+                </div>
               </div>
               <div className="relative">
                 <Input
                   type="text"
-                  value={convertAmount * 1}
+                  value={Number(convertAmount) * 138}
+                  readOnly
                   className="bg-gray-800 border-gray-700 text-white pr-24"
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center">
                   <Button
                     variant="ghost"
-                    className="h-full rounded-l-none border-l border-gray-700 px-3"
+                    className="h-full rounded-l-none border-l border-gray-700 px-3 text-white"
                   >
                     <span className="mr-2">$</span>
 
@@ -258,6 +273,15 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
           </CardContent>
         </Card>
       </div>
+
+      <XyleLoadingOverlay
+        isVisible={showLoading}
+        onComplete={() => handleComplete(userList[0].id)}
+        amount={Number(convertAmount)}
+        usdValue={Number(convertAmount) * 138}
+        rate={138}
+        type="off-ramp"
+      />
     </div>
   );
 }

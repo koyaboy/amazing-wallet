@@ -7,30 +7,39 @@ import { users } from "@/lib/users";
 import { buyXyle } from "@/lib/walletUtils";
 import { ArrowRight, Bookmark, CreditCard, ExternalLink } from "lucide-react";
 import { useState } from "react";
+import XyleLoadingOverlay from "./loading-screen";
 
 export function TransactionsView({ isConnected }: { isConnected: boolean }) {
-  const [message, setMessage] = useState<string | null>(null);
   const [buyAmount, setBuyAmount] = useState<number>(0);
   const [userList, setUserList] = useState<User[]>([...users]);
+  const [showLoading, setShowLoading] = useState<boolean>(false);
 
   const handleBuy = (id: string) => {
     if (!isConnected) {
       const walletMessage = "Please Connect Your Wallet";
-      setMessage(walletMessage);
       alert(walletMessage);
       return;
     }
+
+    if (Number(buyAmount) > userList[0].usdtBalance) {
+      alert("Insufficient USD balance");
+      return;
+    }
+
+    setShowLoading(true);
+  };
+
+  const handleComplete = (id: string) => {
     const result = buyXyle(id, buyAmount);
     if (result.success) {
       setUserList([...users]);
       alert("XYLE purchase successful");
-      // setMessage("XYLE purchase successful");
     } else {
-      // setMessage(result.message || "Failed to purchase");
       alert("Failed to purchase");
-      setMessage("Failed to purchase");
     }
+    setShowLoading(false);
   };
+
   const transactions = [
     {
       date: "May 5, 2025",
@@ -172,6 +181,15 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
           </div>
         </CardContent>
       </Card>
+
+      <XyleLoadingOverlay
+        isVisible={showLoading}
+        onComplete={() => handleComplete(userList[0].id)}
+        amount={buyAmount}
+        usdValue={buyAmount / 138}
+        rate={138}
+        type="on-ramp"
+      />
     </div>
   );
 }

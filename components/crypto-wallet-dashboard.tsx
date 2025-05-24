@@ -9,9 +9,10 @@ import { Search, Bell, User, UserCircle2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { users } from "@/lib/users";
-import { buyXyle } from "@/lib/walletUtils";
-import { User as UserType } from "@/lib/types/user.interface";
-
+// import { buyXyle } from "@/lib/walletUtils";
+// import { User as UserType } from "@/lib/types/user.interface";
+// import { ConnectButton } from "@rainbow-me/rainbowkit";
+// import { useCallback } from "react";
 
 type View =
   | "dashboard"
@@ -34,7 +35,6 @@ export function CryptoWalletDashboard() {
     setMessage("Wallet connected!");
     setIsConnected(true);
   };
-
 
   return (
     <div className="flex flex-col md:flex-row h-screen text-white">
@@ -205,7 +205,7 @@ export function CryptoWalletDashboard() {
                 className="hidden sm:flex items-center gap-2 bg-gray-900 text-white border-gray-700"
                 onClick={() => handleConnectWallet(users[0].id)}
               >
-                <span>Connect</span>
+                <span>Connect Wallet</span>
               </Button>
             )}
             {connectedUserId && (
@@ -216,6 +216,9 @@ export function CryptoWalletDashboard() {
                 <UserCircle2Icon size={24} color="#fff" />
               </div>
             )}
+            {/* <ConnectButton /> */}
+            {/* <button onClick={openRamp}>Open Ramp</button> */}
+
             <Button variant="ghost" size="icon" className="text-gray-400">
               <Bell className="h-5 w-5" />
               <span className="sr-only">Notifications</span>

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "@rainbow-me/rainbowkit/styles.css";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "AMAZING WALLET",
@@ -13,7 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* <Providers>{children}</Providers> */}
+      </body>
     </html>
   );
 }
