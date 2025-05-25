@@ -9,9 +9,9 @@ import { Search, Bell, User, UserCircle2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { users } from "@/lib/users";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 // import { buyXyle } from "@/lib/walletUtils";
 // import { User as UserType } from "@/lib/types/user.interface";
-// import { ConnectButton } from "@rainbow-me/rainbowkit";
 // import { useCallback } from "react";
 
 type View =
@@ -198,7 +198,7 @@ export function CryptoWalletDashboard() {
               <Search className="h-5 w-5" />
               <span className="sr-only">Search</span>
             </Button>
-            {!connectedUserId && (
+            {/* {!connectedUserId && (
               <Button
                 variant="outline"
                 size="sm"
@@ -215,8 +215,8 @@ export function CryptoWalletDashboard() {
                 </p>
                 <UserCircle2Icon size={24} color="#fff" />
               </div>
-            )}
-            {/* <ConnectButton /> */}
+            )} */}
+            <ConnectButton />
             {/* <button onClick={openRamp}>Open Ramp</button> */}
 
             <Button variant="ghost" size="icon" className="text-gray-400">

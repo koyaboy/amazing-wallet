@@ -6,7 +6,15 @@ import { User } from "@/lib/types/user.interface";
 import { users } from "@/lib/users";
 import { buyXyle } from "@/lib/walletUtils";
 import { ArrowRight, Bookmark, CreditCard, ExternalLink } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAccount, useBalance } from "wagmi";
+import {
+  useBuyToken,
+  useSellToken,
+  TOKEN_CONTRACT_ADDRESS,
+} from "@/lib/tokenContract";
+import { parseUnits } from "viem";
+
 import XyleLoadingOverlay from "./loading-screen";
 
 export function TransactionsView({ isConnected }: { isConnected: boolean }) {
@@ -14,10 +22,51 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
   const [userList, setUserList] = useState<User[]>([...users]);
   const [showLoading, setShowLoading] = useState<boolean>(false);
 
-  const handleBuy = (id: string) => {
-    if (!isConnected) {
-      const walletMessage = "Please Connect Your Wallet";
-      alert(walletMessage);
+  // Wagmi hooks for wallet interaction
+  const { address } = useAccount();
+
+  // Get user's BNB balance
+  // const { data: bnbBalance, refetch: refetchBnbBalance } = useBalance({
+  //   address,
+  // });
+  const { data: tokenBalance, refetch: refetchTokenBalance } = useBalance({
+    address, // user's wallet address
+    token: "0xBd593b841c8fA31fc7d0ad3436e65DDbAc495F8a", // your token's contract address
+  });
+
+  // console.log("tokenBalance", tokenBalance);
+
+  // Token transaction hooks
+  const {
+    buyToken,
+    hash: buyHash,
+    isPending: isBuyPending,
+    isConfirming: isBuyConfirming,
+    isConfirmed: isBuyConfirmed,
+  } = useBuyToken();
+
+  // Track transaction hash for BSCScan link
+  const [txHash, setTxHash] = useState<string | null>(null);
+
+  // Monitor transaction status and update UI accordingly
+  useEffect(() => {
+    if (buyHash) {
+      setTxHash(buyHash);
+      setShowLoading(true);
+    }
+
+    refetchTokenBalance();
+
+    console.log(tokenBalance);
+    // if (isBuyConfirmed || isSellConfirmed) {
+    //   // Refresh balances after transaction is confirmed
+    //   refetchBnbBalance();
+    // }
+  }, [buyHash]);
+
+  const handleBuy = async (id: string) => {
+    if (!address) {
+      alert("Please Connect Your Wallet");
       return;
     }
 
@@ -26,16 +75,26 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
       return;
     }
 
-    setShowLoading(true);
+    try {
+      // Start the blockchain transaction
+      await buyToken(address, buyAmount / 138);
+      // Loading screen will be shown by the useEffect monitoring buyHash
+    } catch (error) {
+      console.error("Error during purchase:", error);
+      alert("Transaction failed. See console for details.");
+      setShowLoading(false);
+    }
   };
 
   const handleComplete = (id: string) => {
+    // This is called when the loading animation completes
+    // Now update the local state with buyXyle
     const result = buyXyle(id, buyAmount);
     if (result.success) {
       setUserList([...users]);
       alert("XYLE purchase successful");
     } else {
-      alert("Failed to purchase");
+      alert("Failed to update local state");
     }
     setShowLoading(false);
   };
