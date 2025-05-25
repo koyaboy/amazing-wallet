@@ -55,9 +55,10 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
       setShowLoading(true);
     }
 
+    // console.log("address", address);
     refetchTokenBalance();
 
-    console.log(tokenBalance);
+    // console.log(tokenBalance);
     // if (isBuyConfirmed || isSellConfirmed) {
     //   // Refresh balances after transaction is confirmed
     //   refetchBnbBalance();

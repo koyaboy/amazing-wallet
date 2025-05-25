@@ -97,11 +97,11 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
   };
 
   const handleComplete = (userId: string) => {
-    const success = convertXyleToUsdt(userId, Number(convertAmount));
-    if (success) {
-      alert("Conversion successful!");
-      setUserList([...users]); // Refresh UI
-    }
+    // const success = convertXyleToUsdt(userId, Number(convertAmount));
+    // if (success) {
+    alert("Conversion successful!");
+    // setUserList([...users]); // Refresh UI
+    // }
     setShowLoading(false);
   };
 
