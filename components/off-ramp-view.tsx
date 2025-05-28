@@ -45,7 +45,11 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
     isConfirmed: isSellConfirmed,
   } = useSellToken();
 
-  const { data: tokenBalance, refetch: refetchTokenBalance } = useBalance({
+  const {
+    data: tokenBalance,
+    refetch: refetchTokenBalance,
+    isLoading: isBalanceLoading,
+  } = useBalance({
     address, // user's wallet address
     token: "0xBd593b841c8fA31fc7d0ad3436e65DDbAc495F8a", // your token's contract address
   });
@@ -55,15 +59,17 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
       setTxHash(sellHash);
       setShowLoading(true);
     }
-
-    refetchTokenBalance();
-    console.log("ran");
-
-    // if (isBuyConfirmed || isSellConfirmed) {
-    //   // Refresh balances after transaction is confirmed
-    //   refetchBnbBalance();
-    // }
   }, [sellHash]);
+
+  useEffect(() => {
+    if (isSellConfirmed) {
+      setTimeout(() => {
+        refetchTokenBalance().then(() => {
+          setShowLoading(false);
+        });
+      }, 3000); // wait 3 seconds before refetching
+    }
+  }, [isSellConfirmed, refetchTokenBalance]);
 
   const handleConvert = async (userId: string) => {
     // if (!isConnected) {
@@ -129,7 +135,14 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-4xl font-bold text-white">
-                  {Number(tokenBalance?.formatted || 0).toFixed(6)}
+                  {isBalanceLoading ? (
+                    <p>Loading balance...</p>
+                  ) : (
+                    <p>
+                      Token Balance:{" "}
+                      {Number(tokenBalance?.formatted || 0).toFixed(6)}
+                    </p>
+                  )}
                 </div>
 
                 <div className="text-gray-400">XYLE</div>
