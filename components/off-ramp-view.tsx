@@ -7,10 +7,17 @@ import { Eye, RefreshCw, History, HelpCircle } from "lucide-react";
 
 import { users } from "@/lib/users";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { convertXyleToUsdt } from "@/lib/walletUtils";
 import { User } from "@/lib/types/user.interface";
+import {
+  useBuyToken,
+  useSellToken,
+  TOKEN_CONTRACT_ADDRESS,
+} from "@/lib/tokenContract";
+import { parseUnits } from "viem";
 import XyleLoadingOverlay from "./loading-screen";
+import { useAccount, useBalance } from "wagmi";
 
 export function OffRampView({ isConnected }: { isConnected: boolean }) {
   const [transfer, setTransfer] = useState<{
@@ -27,30 +34,80 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
   const [message, setMessage] = useState<string>("");
   const [userList, setUserList] = useState<User[]>([...users]);
   const [showLoading, setShowLoading] = useState<boolean>(false);
+  const [txHash, setTxHash] = useState<string | null>(null);
+  const { address } = useAccount();
 
-  const handleConvert = (userId: string) => {
-    if (!isConnected) {
-      alert("Please connect your wallet");
+  const {
+    sellToken,
+    hash: sellHash,
+    isPending: isSellPending,
+    isConfirming: isSellConfirming,
+    isConfirmed: isSellConfirmed,
+  } = useSellToken();
+
+  const {
+    data: tokenBalance,
+    refetch: refetchTokenBalance,
+    isLoading: isBalanceLoading,
+  } = useBalance({
+    address, // user's wallet address
+    token: "0xBd593b841c8fA31fc7d0ad3436e65DDbAc495F8a", // your token's contract address
+  });
+
+  useEffect(() => {
+    if (sellHash) {
+      setTxHash(sellHash);
+      setShowLoading(true);
+    }
+  }, [sellHash]);
+
+  useEffect(() => {
+    if (isSellConfirmed) {
+      setTimeout(() => {
+        refetchTokenBalance().then(() => {
+          setShowLoading(false);
+        });
+      }, 3000); // wait 3 seconds before refetching
+    }
+  }, [isSellConfirmed, refetchTokenBalance]);
+
+  const handleConvert = async (userId: string) => {
+    // if (!isConnected) {
+    //   alert("Please connect your wallet");
+    //   return;
+    // }
+    if (!address) {
+      alert("Please Connect Your Wallet");
       return;
     }
+
     if (convertAmount === "") {
       alert("Enter input amount");
       return;
     }
 
-    if (Number(convertAmount) > userList[0].xyleBalance) {
+    if (Number(convertAmount) > Number(tokenBalance?.formatted || 0)) {
       alert("Insufficient XYLE balance");
       return;
     }
-    setShowLoading(true);
+
+    try {
+      // Start the blockchain transaction
+      await sellToken(address, Number(convertAmount));
+      // Loading screen will be shown by the useEffect monitoring buyHash
+    } catch (error) {
+      console.error("Error during purchase:", error);
+      alert("Transaction failed. See console for details.");
+      setShowLoading(false);
+    }
   };
 
   const handleComplete = (userId: string) => {
-    const success = convertXyleToUsdt(userId, Number(convertAmount));
-    if (success) {
-      alert("Conversion successful!");
-      setUserList([...users]); // Refresh UI
-    }
+    // const success = convertXyleToUsdt(userId, Number(convertAmount));
+    // if (success) {
+    alert("Conversion successful!");
+    // setUserList([...users]); // Refresh UI
+    // }
     setShowLoading(false);
   };
 
@@ -78,7 +135,14 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-4xl font-bold text-white">
-                  {users[0].xyleBalance}
+                  {isBalanceLoading ? (
+                    <p>Loading balance...</p>
+                  ) : (
+                    <p>
+                      Token Balance:{" "}
+                      {Number(tokenBalance?.formatted || 0).toFixed(6)}
+                    </p>
+                  )}
                 </div>
 
                 <div className="text-gray-400">XYLE</div>
@@ -89,7 +153,9 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
               </Button>
             </div>
 
-            <div className="text-gray-400">= ${users[0].xyleBalance} USD</div>
+            <div className="text-gray-400">
+              = ${Number(tokenBalance?.formatted || 0) * 138} USD
+            </div>
             <div className="text-sm text-gray-400">
               Fixed Rate: $138 USD per XYLE
             </div>
@@ -142,7 +208,8 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
               <div className="flex justify-between mb-2 text-white">
                 <Label>From</Label>
                 <div className="text-sm text-gray-400">
-                  Available Balance: {users[0].xyleBalance} XYLE
+                  Available Balance:{" "}
+                  {Number(tokenBalance?.formatted || 0).toFixed(6)} XYLE
                 </div>
               </div>
               <div className="relative">

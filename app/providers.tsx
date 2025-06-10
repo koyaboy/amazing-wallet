@@ -6,7 +6,7 @@ import {
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
 import { metaMaskWallet } from "@rainbow-me/rainbowkit/wallets";
-import { mainnet, sepolia } from "wagmi/chains";
+import { bsc, bscTestnet, mainnet, sepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider, createConfig, http } from "wagmi";
 
@@ -24,29 +24,25 @@ const connectors = connectorsForWallets(
     },
   ],
   {
-    appName: "0x Swap Demo App",
+    appName: "XYLE Demo",
     projectId,
   }
 );
 
 const config = createConfig({
-  chains: [mainnet, sepolia],
+  chains: [bsc],
   // turn off injected provider discovery
   multiInjectedProviderDiscovery: false,
   connectors,
   ssr: true,
-  transports: { [mainnet.id]: http(), [sepolia.id]: http() },
+  transports: { [bsc.id]: http() },
 });
 
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      style={{
-        padding: "20px",
-      }}
-    >
+    <div>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider>{children}</RainbowKitProvider>{" "}
