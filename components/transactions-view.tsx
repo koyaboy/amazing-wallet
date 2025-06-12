@@ -16,76 +16,95 @@ import {
 import { parseUnits } from "viem";
 
 import XyleLoadingOverlay from "./loading-screen";
+import {
+  useCurrentAccount,
+  useSignAndExecuteTransaction,
+} from "@mysten/dapp-kit";
+import {
+  buildMintTransaction,
+  getTransactions,
+} from "@/lib/sui-utils/SuiClient";
+import { PaginatedTransactionResponse } from "@mysten/sui/client";
+import TransactionHistory from "./atoms/TransactionHistory";
 
 export function TransactionsView({ isConnected }: { isConnected: boolean }) {
   const [buyAmount, setBuyAmount] = useState<number>(0);
   const [userList, setUserList] = useState<User[]>([...users]);
   const [showLoading, setShowLoading] = useState<boolean>(false);
+  const [transactions, setTransactions] =
+    useState<PaginatedTransactionResponse | null>(null);
+
+  const [isTransactionLoading, setIsTransactionLoading] = useState(false);
+  const [txCompleted, setTxCompleted] = useState(false); // state to monitor successful transactions eg burning, minting
+
+  //1. get current user address
+  const account = useCurrentAccount();
+  const { mutate: signAndExecute, isPending } = useSignAndExecuteTransaction();
 
   // Wagmi hooks for wallet interaction
-  const { address } = useAccount();
+  // const { address } = useAccount();
 
   // Get user's BNB balance
   // const { data: bnbBalance, refetch: refetchBnbBalance } = useBalance({
   //   address,
   // });
-  const { data: tokenBalance, refetch: refetchTokenBalance } = useBalance({
-    address, // user's wallet address
-    token: "0xBd593b841c8fA31fc7d0ad3436e65DDbAc495F8a", // your token's contract address
-  });
+  // const { data: tokenBalance, refetch: refetchTokenBalance } = useBalance({
+  //   address, // user's wallet address
+  //   token: "0xBd593b841c8fA31fc7d0ad3436e65DDbAc495F8a", // your token's contract address
+  // });
 
   // console.log("tokenBalance", tokenBalance);
 
   // Token transaction hooks
-  const {
-    buyToken,
-    hash: buyHash,
-    isPending: isBuyPending,
-    isConfirming: isBuyConfirming,
-    isConfirmed: isBuyConfirmed,
-  } = useBuyToken();
+  // const {
+  //   buyToken,
+  //   hash: buyHash,
+  //   isPending: isBuyPending,
+  //   isConfirming: isBuyConfirming,
+  //   isConfirmed: isBuyConfirmed,
+  // } = useBuyToken();
 
-  // Track transaction hash for BSCScan link
-  const [txHash, setTxHash] = useState<string | null>(null);
+  // // Track transaction hash for BSCScan link
+  // const [txHash, setTxHash] = useState<string | null>(null);
 
   // Monitor transaction status and update UI accordingly
-  useEffect(() => {
-    if (buyHash) {
-      setTxHash(buyHash);
-      setShowLoading(true);
-    }
+  // useEffect(() => {
+  //   if (buyHash) {
+  //     setTxHash(buyHash);
+  //     setShowLoading(true);
+  //   }
 
-    // console.log("address", address);
-    refetchTokenBalance();
+  //   // console.log("address", address);
+  //   refetchTokenBalance();
 
-    // console.log(tokenBalance);
-    // if (isBuyConfirmed || isSellConfirmed) {
-    //   // Refresh balances after transaction is confirmed
-    //   refetchBnbBalance();
-    // }
-  }, [buyHash]);
+  //   // console.log(tokenBalance);
+  //   // if (isBuyConfirmed || isSellConfirmed) {
+  //   //   // Refresh balances after transaction is confirmed
+  //   //   refetchBnbBalance();
+  //   // }
+  // }, [buyHash]);
 
-  const handleBuy = async (id: string) => {
-    if (!address) {
-      alert("Please Connect Your Wallet");
-      return;
-    }
+  // const handleBuy = async (id: string) => {
+  //   if (!address) {
+  //     alert("Please Connect Your Wallet");
+  //     return;
+  //   }
 
-    if (Number(buyAmount) > userList[0].usdtBalance) {
-      alert("Insufficient USD balance");
-      return;
-    }
+  //   if (Number(buyAmount) > userList[0].usdtBalance) {
+  //     alert("Insufficient USD balance");
+  //     return;
+  //   }
 
-    try {
-      // Start the blockchain transaction
-      await buyToken(address, buyAmount / 138);
-      // Loading screen will be shown by the useEffect monitoring buyHash
-    } catch (error) {
-      console.error("Error during purchase:", error);
-      alert("Transaction failed. See console for details.");
-      setShowLoading(false);
-    }
-  };
+  //   try {
+  //     // Start the blockchain transaction
+  //     await buyToken(address, buyAmount / 138);
+  //     // Loading screen will be shown by the useEffect monitoring buyHash
+  //   } catch (error) {
+  //     console.error("Error during purchase:", error);
+  //     alert("Transaction failed. See console for details.");
+  //     setShowLoading(false);
+  //   }
+  // };
 
   const handleComplete = (id: string) => {
     // This is called when the loading animation completes
@@ -100,26 +119,60 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
     setShowLoading(false);
   };
 
-  const transactions = [
-    {
-      date: "May 5, 2025",
-      type: "Off-Ramp",
-      amount: "3.62 XYLE → $500.00 USD",
-      status: "Completed",
-    },
-    {
-      date: "Apr 28, 2025",
-      type: "On-Ramp",
-      amount: "$1,380.00 USD → 10.00 XYLE",
-      status: "Completed",
-    },
-    {
-      date: "Apr 15, 2025",
-      type: "Off-Ramp",
-      amount: "2.17 XYLE → $300.00 USD",
-      status: "Completed",
-    },
-  ];
+  const handleMint = async () => {
+    if (!account) {
+      alert("Wallet not connected");
+      return;
+    }
+
+    const mintTx = buildMintTransaction({
+      amount: buyAmount * 100_000_000, // 138 represents the USD equivalent of XYLE
+      recipient: account.address,
+    });
+
+    signAndExecute(
+      {
+        transaction: mintTx,
+        chain: "sui:testnet",
+        account: account,
+      },
+      {
+        onSuccess: (txResult) => {
+          console.log("Mint succeeded:", txResult);
+          setTxCompleted(true);
+        },
+        onError: (error) => {
+          console.error("Mint failed:", error);
+        },
+      }
+    );
+  };
+
+  useEffect(() => {
+    const getAllTransactions = async () => {
+      if (!account) {
+        return;
+      }
+
+      setIsTransactionLoading(true);
+
+      try {
+        const result = await getTransactions(account.address);
+
+        if (result) {
+          setTransactions(result);
+        }
+        setIsTransactionLoading(false);
+
+        console.log(transactions);
+      } catch (error: any) {
+        console.log("Error getting transactions:", error.message);
+        setIsTransactionLoading(false);
+      }
+    };
+
+    getAllTransactions();
+  }, [account || txCompleted]);
 
   return (
     <div className="space-y-6">
@@ -130,50 +183,10 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
         </Button>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full border-separate border-spacing-y-2 text-sm text-white">
-          <thead>
-            <tr className="text-gray-400 uppercase text-xs">
-              <th className="py-2 text-left">Date</th>
-              <th className="py-2 text-left">Type</th>
-              <th className="py-2 text-left">Amount</th>
-              <th className="py-2 text-left">Status</th>
-              <th className="py-2 text-left">Details</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((transaction, index) => (
-              <tr
-                key={index}
-                className="bg-[#1a1f2c] hover:bg-[#222835] transition-colors duration-150 rounded-md"
-              >
-                <td className="py-3 px-4 rounded-l-md">{transaction.date}</td>
-                <td className="py-3 px-4">
-                  <span
-                    className={`px-2 py-1 text-xs rounded ${
-                      transaction.type === "On-Ramp"
-                        ? "bg-blue-900/30 text-blue-400"
-                        : "bg-green-900/30 text-green-400"
-                    }`}
-                  >
-                    {transaction.type}
-                  </span>
-                </td>
-                <td className="py-3 px-4">{transaction.amount}</td>
-                <td className="py-3 px-4 text-gray-400">
-                  {transaction.status}
-                </td>
-                <td className="py-3 px-4 rounded-r-md">
-                  <Button variant="ghost" size="icon" className="text-gray-400">
-                    <ExternalLink className="h-4 w-4" />
-                    <span className="sr-only">View details</span>
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <TransactionHistory
+        transactions={transactions}
+        isTransactionLoading={isTransactionLoading}
+      />
 
       <Card className="bg-gray-900 border-gray-800">
         <CardHeader>
@@ -207,9 +220,9 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
             </div>
 
             <Button
-              onClick={() => handleBuy(userList[0].id)}
+              onClick={handleMint}
               className="w-full bg-gray-700 hover:bg-gray-600 text-white"
-              // disabled={!isConnected}
+              disabled={!account?.address}
             >
               Buy XYLE
             </Button>

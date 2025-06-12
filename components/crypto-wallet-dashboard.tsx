@@ -9,10 +9,11 @@ import { Search, Bell, User, UserCircle2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { users } from "@/lib/users";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+// import { ConnectButton } from "@rainbow-me/rainbowkit";
 // import { buyXyle } from "@/lib/walletUtils";
 // import { User as UserType } from "@/lib/types/user.interface";
 // import { useCallback } from "react";
+import { ConnectButton } from "@mysten/dapp-kit";
 
 type View =
   | "dashboard"
@@ -216,7 +217,7 @@ export function CryptoWalletDashboard() {
                 <UserCircle2Icon size={24} color="#fff" />
               </div>
             )} */}
-            <ConnectButton />
+            <ConnectButton>Connect Wallet</ConnectButton>
             {/* <button onClick={openRamp}>Open Ramp</button> */}
 
             <Button variant="ghost" size="icon" className="text-gray-400">
