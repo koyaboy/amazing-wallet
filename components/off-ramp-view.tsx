@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,6 +20,17 @@ import {
 import { parseUnits } from "viem";
 import XyleLoadingOverlay from "./loading-screen";
 import { useAccount, useBalance } from "wagmi";
+import {
+  useCurrentAccount,
+  useSignAndExecuteTransaction,
+} from "@mysten/dapp-kit";
+import {
+  buildMintTransaction,
+  buildTransferTransaction,
+  client,
+  getWalletBalance,
+} from "@/lib/sui-utils/SuiClient";
+import { getCoins } from "@/lib/sui-utils/getCoins";
 
 export function OffRampView({ isConnected }: { isConnected: boolean }) {
   const [transfer, setTransfer] = useState<{
@@ -36,6 +49,13 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
   const [showLoading, setShowLoading] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string | null>(null);
   const { address } = useAccount();
+  const { mutate: signAndExecute, isPending } = useSignAndExecuteTransaction();
+  const [xyleBalance, setXyleBalance] = useState(0);
+  const [txComplete, setTxComplete] = useState(false);
+  const [coinId, setCoinId] = useState<string | null>(null);
+
+  //1. get current user address
+  const account = useCurrentAccount();
 
   const {
     sellToken,
@@ -45,7 +65,11 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
     isConfirmed: isSellConfirmed,
   } = useSellToken();
 
-  const { data: tokenBalance, refetch: refetchTokenBalance } = useBalance({
+  const {
+    data: tokenBalance,
+    refetch: refetchTokenBalance,
+    isLoading: isBalanceLoading,
+  } = useBalance({
     address, // user's wallet address
     token: "0xBd593b841c8fA31fc7d0ad3436e65DDbAc495F8a", // your token's contract address
   });
@@ -55,44 +79,63 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
       setTxHash(sellHash);
       setShowLoading(true);
     }
-
-    refetchTokenBalance();
-    console.log("ran");
-
-    // if (isBuyConfirmed || isSellConfirmed) {
-    //   // Refresh balances after transaction is confirmed
-    //   refetchBnbBalance();
-    // }
   }, [sellHash]);
 
-  const handleConvert = async (userId: string) => {
-    // if (!isConnected) {
-    //   alert("Please connect your wallet");
-    //   return;
-    // }
-    if (!address) {
-      alert("Please Connect Your Wallet");
+  useEffect(() => {
+    if (isSellConfirmed) {
+      setTimeout(() => {
+        refetchTokenBalance().then(() => {
+          setShowLoading(false);
+        });
+      }, 3000); // wait 3 seconds before refetching
+    }
+  }, [isSellConfirmed, refetchTokenBalance]);
+
+  const handleConvert = async () => {
+    if (!account) {
+      alert("Connect wallet");
       return;
     }
 
-    if (convertAmount === "") {
-      alert("Enter input amount");
+    if (!convertAmount) {
+      alert("Enter recipient and amount");
       return;
     }
 
-    if (Number(convertAmount) > Number(tokenBalance?.formatted || 0)) {
-      alert("Insufficient XYLE balance");
+    if (!coinId) {
+      alert("Please wait whiloe we get coin ID");
       return;
     }
+
+    const amountInBaseUnits = Number(convertAmount) * 100_000_000;
 
     try {
-      // Start the blockchain transaction
-      await sellToken(address, Number(convertAmount));
-      // Loading screen will be shown by the useEffect monitoring buyHash
+      const tx = buildTransferTransaction({
+        recipient:
+          "0xa180e8ec28603cba892d1505170abb7b2c5a87c5e7b61f0b0036419fe7f7ae4e",
+        amount: amountInBaseUnits,
+        coinObjectId: coinId,
+      });
+
+      signAndExecute(
+        {
+          transaction: tx,
+          chain: "sui:testnet",
+          account,
+        },
+        {
+          onSuccess: (res) => {
+            console.log("Transfer success:", res);
+            setTxComplete(true);
+            alert("Swap Successful");
+          },
+          onError: (err) => {
+            console.error("Transfer failed:", err);
+          },
+        }
+      );
     } catch (error) {
-      console.error("Error during purchase:", error);
-      alert("Transaction failed. See console for details.");
-      setShowLoading(false);
+      console.error("Error:", error);
     }
   };
 
@@ -104,6 +147,37 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
     // }
     setShowLoading(false);
   };
+
+  useEffect(() => {
+    const getBalanceFunc = async () => {
+      if (!account) {
+        return;
+      }
+      const result = await getWalletBalance(account?.address);
+
+      if (result) {
+        setXyleBalance(result);
+      }
+
+      console.log(result);
+    };
+
+    getBalanceFunc();
+  }, [txComplete]);
+
+  useEffect(() => {
+    const getCoinObjectId = async () => {
+      if (!account) {
+        alert("Connect Wallet");
+        return;
+      }
+      const result = await getCoins(client, account?.address);
+      setCoinId(result);
+      console.log("Use Effect to get coin worked", result);
+    };
+
+    getCoinObjectId();
+  }, [account]);
 
   return (
     <div className="space-y-6">
@@ -129,7 +203,15 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-4xl font-bold text-white">
-                  {Number(tokenBalance?.formatted || 0).toFixed(6)}
+                  {isBalanceLoading ? (
+                    <p>Loading balance...</p>
+                  ) : (
+                    <p>
+                      Token Balance:{" "}
+                      {/* {Number(tokenBalance?.formatted || 0).toFixed(6)} */}
+                      {xyleBalance}
+                    </p>
+                  )}
                 </div>
 
                 <div className="text-gray-400">XYLE</div>
@@ -320,7 +402,7 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
 
             <Button
               className="w-full bg-gray-700 hover:bg-gray-600 text-white"
-              onClick={() => handleConvert(userList[0].id)}
+              onClick={() => handleConvert()}
             >
               Convert to Fiat
             </Button>

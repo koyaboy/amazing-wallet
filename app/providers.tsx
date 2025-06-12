@@ -9,6 +9,8 @@ import { metaMaskWallet } from "@rainbow-me/rainbowkit/wallets";
 import { bsc, bscTestnet, mainnet, sepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider, createConfig, http } from "wagmi";
+import { getFullnodeUrl } from "@mysten/sui/client";
+import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
 
 const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID as string;
 
@@ -39,13 +41,21 @@ const config = createConfig({
 });
 
 const queryClient = new QueryClient();
+const networks = {
+  testnet: { url: getFullnodeUrl("testnet") },
+  mainnet: { url: getFullnodeUrl("mainnet") },
+};
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <div>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider>{children}</RainbowKitProvider>{" "}
+          <SuiClientProvider networks={networks} defaultNetwork="testnet">
+            <WalletProvider>
+              <RainbowKitProvider>{children}</RainbowKitProvider>{" "}
+            </WalletProvider>
+          </SuiClientProvider>
         </QueryClientProvider>
       </WagmiProvider>
     </div>
