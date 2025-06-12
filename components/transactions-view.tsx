@@ -126,7 +126,7 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
     }
 
     const mintTx = buildMintTransaction({
-      amount: buyAmount * 100_000_000, // 138 represents the USD equivalent of XYLE
+      amount: Math.round((buyAmount / 138) * 100_000_000), // 138 represents the USD equivalent of XYLE
       recipient: account.address,
     });
 
@@ -140,9 +140,11 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
         onSuccess: (txResult) => {
           console.log("Mint succeeded:", txResult);
           setTxCompleted(true);
+          alert("XYLE purchaase successful");
         },
         onError: (error) => {
           console.error("Mint failed:", error);
+          alert("XYLE purchase failed");
         },
       }
     );
@@ -175,18 +177,19 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
   }, [account || txCompleted]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Recent Transactions</h2>
-        <Button variant="link" className="text-gray-400">
-          View All
-        </Button>
+    <div className="flex flex-col gap-4  h-screen">
+      <div>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">Recent Transactions</h2>
+          <Button variant="link" className="text-gray-400">
+            View All
+          </Button>
+        </div>
+        <TransactionHistory
+          transactions={transactions}
+          isTransactionLoading={isTransactionLoading}
+        />{" "}
       </div>
-
-      <TransactionHistory
-        transactions={transactions}
-        isTransactionLoading={isTransactionLoading}
-      />
 
       <Card className="bg-gray-900 border-gray-800">
         <CardHeader>

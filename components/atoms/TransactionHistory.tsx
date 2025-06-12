@@ -10,6 +10,10 @@ const TransactionHistory = ({
   transactions: PaginatedTransactionResponse | null;
   isTransactionLoading: boolean;
 }) => {
+  if (!transactions) {
+    return <div className="h-20">No transactions, please connect wallet</div>;
+  }
+
   if (isTransactionLoading) {
     return (
       <div className="flex items-center justify-center">
