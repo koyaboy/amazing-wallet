@@ -68,11 +68,11 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
   // const [txHash, setTxHash] = useState<string | null>(null);
 
   // Monitor transaction status and update UI accordingly
-  // useEffect(() => {
-  //   if (buyHash) {
-  //     setTxHash(buyHash);
-  //     setShowLoading(true);
-  //   }
+  useEffect(() => {
+    if (txCompleted) {
+      setShowLoading(true);
+    }
+  }, [txCompleted]);
 
   //   // console.log("address", address);
   //   refetchTokenBalance();
@@ -120,6 +120,8 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
   };
 
   const handleMint = async () => {
+    setTxCompleted(false);
+
     if (!account) {
       alert("Wallet not connected");
       return;
@@ -140,7 +142,7 @@ export function TransactionsView({ isConnected }: { isConnected: boolean }) {
         onSuccess: (txResult) => {
           console.log("Mint succeeded:", txResult);
           setTxCompleted(true);
-          alert("XYLE purchaase successful");
+          // alert("XYLE purchaase successful");
         },
         onError: (error) => {
           console.error("Mint failed:", error);

@@ -75,11 +75,10 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
   });
 
   useEffect(() => {
-    if (sellHash) {
-      setTxHash(sellHash);
+    if (txComplete) {
       setShowLoading(true);
     }
-  }, [sellHash]);
+  }, [txComplete]);
 
   useEffect(() => {
     if (isSellConfirmed) {
@@ -92,6 +91,11 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
   }, [isSellConfirmed, refetchTokenBalance]);
 
   const handleConvert = async () => {
+    setTxComplete(false);
+    if (Number(convertAmount) > xyleBalance) {
+      alert("Insufficient balance");
+      return;
+    }
     if (!account) {
       alert("Connect wallet");
       return;
@@ -127,7 +131,7 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
           onSuccess: (res) => {
             console.log("Transfer success:", res);
             setTxComplete(true);
-            alert("Swap Successful");
+            // alert("Swap Successful");
           },
           onError: (err) => {
             console.error("Transfer failed:", err);
@@ -223,7 +227,7 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
             </div>
 
             <div className="text-gray-400">
-              = ${Number(tokenBalance?.formatted || 0) * 138} USD
+              = ${Number(xyleBalance * 138).toFixed(2)} USD
             </div>
             <div className="text-sm text-gray-400">
               Fixed Rate: $138 USD per XYLE
@@ -277,8 +281,7 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
               <div className="flex justify-between mb-2 text-white">
                 <Label>From</Label>
                 <div className="text-sm text-gray-400">
-                  Available Balance:{" "}
-                  {Number(tokenBalance?.formatted || 0).toFixed(6)} XYLE
+                  Available Balance: {Number(xyleBalance).toFixed(6)} XYLE
                 </div>
               </div>
               <div className="relative">
