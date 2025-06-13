@@ -143,12 +143,18 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
     }
   };
 
-  const handleComplete = (userId: string) => {
+  const handleComplete = async (userId: string) => {
     // const success = convertXyleToUsdt(userId, Number(convertAmount));
     // if (success) {
     alert("Conversion successful!");
-    // setUserList([...users]); // Refresh UI
-    // }
+
+    if (!account) return;
+
+    const result = await getWalletBalance(account?.address);
+
+    if (result) {
+      setXyleBalance(result);
+    }
     setShowLoading(false);
   };
 
