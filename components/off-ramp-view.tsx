@@ -31,6 +31,7 @@ import {
   getWalletBalance,
 } from "@/lib/sui-utils/SuiClient";
 import { getCoins } from "@/lib/sui-utils/getCoins";
+import { Transaction } from "@mysten/sui/transactions";
 
 export function OffRampView({ isConnected }: { isConnected: boolean }) {
   const [transfer, setTransfer] = useState<{
@@ -92,10 +93,12 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
 
   const handleConvert = async () => {
     setTxComplete(false);
+
     if (Number(convertAmount) > xyleBalance) {
       alert("Insufficient balance");
       return;
     }
+
     if (!account) {
       alert("Connect wallet");
       return;
@@ -110,16 +113,67 @@ export function OffRampView({ isConnected }: { isConnected: boolean }) {
       alert("Please wait whiloe we get coin ID");
       return;
     }
+    const coinObject = await client.getObject({
+      id: coinId,
+      options: { showContent: true },
+    });
+
+    console.log("Coin object details:", coinObject);
 
     const amountInBaseUnits = Number(convertAmount) * 100_000_000;
 
     try {
-      const tx = buildTransferTransaction({
-        recipient:
-          "0xa180e8ec28603cba892d1505170abb7b2c5a87c5e7b61f0b0036419fe7f7ae4e",
-        amount: amountInBaseUnits,
-        coinObjectId: coinId,
+      // const tx = buildTransferTransaction({
+      //   recipient:
+      //     "0xa180e8ec28603cba892d1505170abb7b2c5a87c5e7b61f0b0036419fe7f7ae4e",
+      //   amount: amountInBaseUnits,
+      //   coinObjectId: coinId,
+      // });
+
+      // Get ALL coin objects for your token
+      const allCoins = await client.getCoins({
+        owner: account.address,
+        coinType:
+          "0x668bfb1d5a440dcc255433726f054d8d0e4619493f014dfd56d737bec9d0e78f::xyle_token::XYLE_TOKEN",
       });
+
+      // console.log("All coin objects:", allCoins.data);
+
+      const tx = new Transaction();
+
+      // Merge all coins first, then split the amount you need
+      if (allCoins.data.length > 1) {
+        const primaryCoin = allCoins.data[0].coinObjectId;
+        const coinsToMerge = allCoins.data
+          .slice(1)
+          .map((coin) => coin.coinObjectId);
+
+        tx.mergeCoins(
+          tx.object(primaryCoin),
+          coinsToMerge.map((id) => tx.object(id))
+        );
+
+        // Now split from the merged coin
+        const [transferCoin] = tx.splitCoins(tx.object(primaryCoin), [
+          amountInBaseUnits,
+        ]);
+
+        tx.transferObjects(
+          [transferCoin],
+          "0xa180e8ec28603cba892d1505170abb7b2c5a87c5e7b61f0b0036419fe7f7ae4e"
+        );
+      } else {
+        // Only one coin object
+        const [transferCoin] = tx.splitCoins(
+          tx.object(allCoins.data[0].coinObjectId),
+          [amountInBaseUnits]
+        );
+
+        tx.transferObjects(
+          [transferCoin],
+          "0xa180e8ec28603cba892d1505170abb7b2c5a87c5e7b61f0b0036419fe7f7ae4e"
+        );
+      }
 
       signAndExecute(
         {
