@@ -23,7 +23,7 @@ type View =
   | "off-ramp"
   | "on-ramp";
 
-export function CryptoWalletDashboard() {
+export function CryptoWalletDashboard({ onLogout }: { onLogout: () => void }) {
   const [activeView, setActiveView] = useState<View>("transactions");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -217,6 +217,13 @@ export function CryptoWalletDashboard() {
                 <UserCircle2Icon size={24} color="#fff" />
               </div>
             )} */}
+            <div className="flex items-center space-x-2 bg-gray-800 rounded-full px-3 py-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-medium">B</span>
+              </div>
+              <span className="text-white text-sm font-medium">Bob</span>
+            </div>
+
             <ConnectButton>Connect Wallet</ConnectButton>
             {/* <button onClick={openRamp}>Open Ramp</button> */}
 
@@ -224,9 +231,29 @@ export function CryptoWalletDashboard() {
               <Bell className="h-5 w-5" />
               <span className="sr-only">Notifications</span>
             </Button>
-            <Button variant="ghost" size="icon" className="text-gray-400">
-              <User className="h-5 w-5" />
-              <span className="sr-only">Profile</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-gray-400"
+              onClick={onLogout}
+              title="Logout"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16,17 21,12 16,7" />
+                <line x1="21" x2="9" y1="12" y2="12" />
+              </svg>
+              <span className="sr-only">Logout</span>
             </Button>
           </div>
         </header>
