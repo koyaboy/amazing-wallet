@@ -41,10 +41,18 @@ export function CryptoWalletDashboard({ onLogout }: { onLogout: () => void }) {
     <div className="flex flex-col md:flex-row h-screen text-white">
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between p-4 bg-gray-900 border-b border-gray-800">
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <span className="font-bold text-xl">AMAZING</span>
           <span className="text-gray-400 ml-2 text-sm">Wallet</span>
+        </div> */}
+        <div className="flex items-center space-x-2 bg-gray-800 rounded-full px-3 py-2">
+          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+            <span className="text-white text-sm font-medium">B</span>
+          </div>
+          <span className="text-white text-sm font-medium">Bob</span>
         </div>
+
+        <ConnectButton>Connect Wallet</ConnectButton>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
